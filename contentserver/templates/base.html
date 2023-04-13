@@ -1,0 +1,148 @@
+{% load cms_tags menu_tags sekizai_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Dewi Bootstrap Template - Index</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{{ MEDIA_URL }}img/favicon.png" rel="icon">
+  <link href="{{ MEDIA_URL }}img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{{ MEDIA_URL }}vendor/aos/aos.css" rel="stylesheet">
+  <link href="{{ MEDIA_URL }}vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ MEDIA_URL }}vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="{{ MEDIA_URL }}vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="{{ MEDIA_URL }}vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="{{ MEDIA_URL }}vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="{{ MEDIA_URL }}vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{{ MEDIA_URL }}css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: Dewi
+  * Updated: Mar 10 2023 with Bootstrap v5.2.3
+  * Template URL: https://bootstrapmade.com/dewi-free-multi-purpose-html-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+  <div>
+  <header id="header" class="fixed-top "></header>
+  <section id="hero"></section>
+  <main id="main"></main>
+  <footer id="footer"></footer>
+{% block content %}{% endblock content %}
+
+  <div id="preloader"></div>
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+</div>
+  <!-- Vendor JS Files -->
+  <script src="{{ MEDIA_URL }}vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="{{ MEDIA_URL }}vendor/aos/aos.js"></script>
+  <script src="{{ MEDIA_URL }}vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ MEDIA_URL }}vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="{{ MEDIA_URL }}vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="{{ MEDIA_URL }}vendor/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{{ MEDIA_URL }}js/main.js"></script>
+  <script src="{{ MEDIA_URL }}js/jquery.js"></script>
+  <script src="{{ MEDIA_URL }}js/jquery.sidebar.min.js"></script>
+  <script>
+
+    site      = '{{ request.current_page.get_slug }}';
+
+    build_url = '/build?site=' + site;
+    edit_button = '<div class="container-fluid copyright py-4"><div class="container"><div class="row"><div class="col-md-12 text-center text-md-start mb-3 mb-md-0"><a href="build_url" class="btn-get-started scrollto">Edit</a></div></div></div></div>'
+
+    if(site != 'cv'){
+      $.ajax({url: "/site_server?section=navigation&element=navigation&site=" + site, success: function(result){
+        button = edit_button.replace('build_url', build_url +'&section=navigation&element=navigation')
+        $("#header").append(result);
+
+        {% if user.is_authenticated %}
+          $(".navbar ul").append('<li><a class="nav-item nav-link" href="' + build_url +'&section=navigation&element=navigation' + '">Edit</a></li>');
+          $(".navbar ul").append('<li><a class="nav-item nav-link" href="/accounts/logout/">Logout</a></li>');
+        {% else %}
+          $(".navbar ul").append('<li><a class="nav-item nav-link" href="/accounts/login/">Login</a></li>');
+        {% endif %}
+      }});
+
+      $.ajax({url: "/site_server?section=hero&element=hero&site=" + site, success: function(result){
+        button = edit_button.replace('build_url', build_url +'&section=hero&element=hero')
+        $("#hero").append(result);
+        {% if user.is_authenticated %}
+          $("#main").prepend(button);
+        {% endif %}
+
+      }});
+      about_elements = ['about']
+    } else {
+
+      $("#header").remove();
+      $("#hero").remove();
+      about_elements = ['about', 'interests']
+    }
+
+    for (let i = 0; i < about_elements.length; i++) {
+
+        $.ajax({url: "/site_server?section=main&element="+ about_elements[i] +"&site=" + site, success: function(result){
+
+          {% if user.is_authenticated %}
+            button = edit_button.replace('build_url', build_url +'&section=main&element='+about_elements[i])
+            $("#main").append(button)
+          {% endif %}
+            name = about_elements[i].charAt(0).toUpperCase() + about_elements[i].slice(1);
+            $("#main").append("<a name='" + about_elements[i] + "'></a>");
+            $(".dropdown ul").append('<li><a class="dropdown-item" href="#'+ about_elements[i] +'">' + name + '</a></li>');
+
+          $("#main").append(result);
+        }});
+    }
+
+    service_elements = ['features', 'services', 'contact']
+    for (let i = 0; i < service_elements.length; i++) {
+
+        $.ajax({url: "/site_server?section=main&element="+ service_elements[i] +"&site=" + site, success: function(result){
+
+          {% if user.is_authenticated %}
+            button = edit_button.replace('build_url', build_url +'&section=main&element='+service_elements[i])
+            $("#main").append(button)
+          {% endif %}
+            name = service_elements[i].charAt(0).toUpperCase() + service_elements[i].slice(1);
+            $("#main").append("<a name='" + service_elements[i] + "'></a>");
+            $(".dropdown ul").append('<li><a class="dropdown-item" href="#'+ service_elements[i] +'">' + name + '</a></li>');
+            $("#main").append(result);
+        }});
+    }
+
+    $.ajax({url: "/site_server?section=footer&element=footer&site=" + site, success: function(result){
+      button = edit_button.replace('build_url', build_url +'&section=footer&element=footer')
+      $("#footer").append(result);
+      {% if user.is_authenticated %}
+        $("#footer").append(button);
+      {% endif %}
+
+    }});
+
+    $( document ).ready(function() {
+
+
+    });
+  </script>
+</body>
+
+</html>

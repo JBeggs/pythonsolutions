@@ -1,0 +1,223 @@
+{% load cms_tags menu_tags sekizai_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Dewi Bootstrap Template - Index</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{{ MEDIA_URL }}img/favicon.png" rel="icon">
+  <link href="{{ MEDIA_URL }}img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{{ MEDIA_URL }}vendor/aos/aos.css" rel="stylesheet">
+  <link href="{{ MEDIA_URL }}vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ MEDIA_URL }}vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="{{ MEDIA_URL }}vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="{{ MEDIA_URL }}vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="{{ MEDIA_URL }}vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="{{ MEDIA_URL }}vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{{ MEDIA_URL }}css/style.css" rel="stylesheet">
+
+  <script src="https://cdn.tiny.cloud/1/9ojq3k306szd3q6lpbaed88ddejijkt4wrh7q7emtk3byx6t/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+  <style>
+
+        .sidebar.right {
+            width: 150px;;
+        }
+
+
+        .sidebar.right {
+            float:left;
+            z-index:100;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 150px;
+            background: #448AFF;
+        }
+
+        .sidebars > .sidebar {
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.64);
+            position: fixed;
+            color: white;
+            padding: 30px;
+            font-size: 2em;
+            text-align: center;
+        }
+
+  </style>
+
+</head>
+
+<body>
+  <form id="save" method="POST">
+      {% csrf_token %}
+      <input type="hidden" id="site">
+      <input type="hidden" id="section">
+      <input type="hidden" id="element">
+
+
+
+
+    <div class="container">
+
+          <row><header id="navigation" class="fixed-top "></header></row>
+          <section id="hero" class="d-flex align-items-center"></section>
+          <main id="main"></main>
+          <footer id="footer"></footer>
+          <textarea name="content" id="content"></textarea>
+          <div>
+              <a class="btn btn-success" onclick="update_build()" href="#1">Update</a><br />
+              <a href="#" class="btn btn-success" data-action="open" data-side="right"><span>Open Tools</span></a>
+  <a href="#" class="btn btn-success" data-action="close" data-side="right"><span>close Tools</span></a>
+        </div>
+    </div>
+
+
+  <div class="sidebars">
+      <div class="sidebar right">
+        <div>
+			<a onclick="update_build()" href="#1">Update</a><br />
+      </div>
+      </div>
+  </div>
+
+  <div id="preloader"></div>
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{{ MEDIA_URL }}vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="{{ MEDIA_URL }}vendor/aos/aos.js"></script>
+  <script src="{{ MEDIA_URL }}vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ MEDIA_URL }}vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="{{ MEDIA_URL }}vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="{{ MEDIA_URL }}vendor/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{{ MEDIA_URL }}js/main.js"></script>
+  <script src="{{ MEDIA_URL }}js/jquery.js"></script>
+      <script src="{{ MEDIA_URL }}js/jquery.sidebar.min.js"></script>
+    <script>
+
+      function update_build(){
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        section = urlParams.get('section');
+        $('#'+section).html(window.parent.tinymce.get('content').getContent());
+        $('#save').submit();
+      }
+
+      $( document ).ready(function() {
+
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        site    = urlParams.get('site');
+        section = urlParams.get('section');
+        element = urlParams.get('element');
+
+        $('#site').val(site);
+        $('#section').val(section);
+        $('#element').val(element);
+
+        $(".sidebar.right").sidebar({
+          speed: 200,
+          side: "right",
+          isClosed: false,
+          close: true
+        });
+        // All sides
+        var sides = ["right"];
+
+        // Initialize sidebars
+        for (var i = 0; i < sides.length; ++i) {
+            var cSide = sides[i];
+            $(".sidebar." + cSide).sidebar({side: cSide});
+        }
+
+        // Click handlers
+        $(".btn[data-action]").on("click", function () {
+            var $this = $(this);
+            var action = $this.attr("data-action");
+            var side = $this.attr("data-side");
+            $(".sidebar." + side).trigger("sidebar:" + action);
+            return false;
+        });
+
+        $.ajax({url: "/build_html?" + urlParams.toString(), success: function(result){
+
+          if(section == 'navigation'){
+            $('#footer').remove();
+            $('#main').remove();
+
+
+            $('#navigation').html(result).ready(function () {
+                $(":empty").html('&nbsp;')
+                $('#content').html($('#navigation').html());
+            });
+          } else if(section == 'hero'){
+            $('#header').remove();
+            $('#footer').remove();
+            $('#main').remove();
+
+            $('#hero').html(result).ready(function () {
+                $(":empty").html('&nbsp;')
+                $('#content').html($('#hero').html());
+            });
+          } else if(section == 'main'){
+            $('#header').remove();
+            $('#hero').remove();
+            $('#footer').remove();
+            $('#main').html(result).ready(function () {
+                $(":empty").html('&nbsp;')
+                $('#content').html($('#main').html());
+                $('#main img').on("error", function(){
+                    $(this).unbind("error").attr("src", "../media/img/broken.jpg");
+                    $(this).on("click", function(){
+                        $("#myModal").modal("toggle");
+                     });
+                });
+            });;
+
+          } else if(section == 'footer'){
+            $('#header').remove();
+            $('#hero').remove();
+            $('#main').remove();
+            $('#footer').html(result).ready(function () {
+                $(":empty").html('&nbsp;')
+                $('#content').html($('#footer').html());
+            });;
+          }
+
+        }});
+
+
+
+
+      });
+
+    </script>
+<script>
+    tinymce.init({
+      selector: 'textarea',
+      plugins: "code",
+      toolbar: "code",
+      nonbreaking_force_tab: true,
+      lists_indent_on_tab : true,
+    });
+  </script>
+</body>
+
+</html>
